@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Idol - Polling Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard Idol</h1>
+            <button id="logoutBtn" class="btn logout">Logout</button>
+        </header>
+        <main>
+            <h2>Kelola Profil Anda</h2>
+            <form id="idolForm">
+                <div class="form-group">
+                    <label for="idolNama">Nama Kelompok:</label>
+                    <input type="text" id="idolNama" required>
+                </div>
+                <div class="form-group">
+                    <label for="idolDeskripsi">Deskripsi:</label>
+                    <textarea id="idolDeskripsi" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="idolFoto">URL Foto:</label>
+                    <input type="text" id="idolFoto" required>
+                </div>
+                <button type="submit" class="btn">Update Profil</button>
+            </form>
+            <div id="idolProfile"></div>
+        </main>
+        <footer>
+            <p>&copy; 2023 Polling Website. Created by Aditya Putra B. (XI - 1)</p>
+        </footer>
+    </div>
+    <script src="auth.js"></script>
+    <script src="database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
