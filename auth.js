@@ -6,23 +6,30 @@ const usersDatabase = [
 ];
 
 // Function to authenticate user
-function authenticateUser(username, password) {
-    return new Promise((resolve, reject) => {
-        // Simulate API call delay
-        setTimeout(() => {
-            const user = usersDatabase.find(u => 
-                u.username === username && u.password === password);
-            
-            if (user) {
-                // Clone the user object to avoid modifying the original
-                const userCopy = JSON.parse(JSON.stringify(user));
-                resolve(userCopy);
-            } else {
-                resolve(null);
-            }
-        }, 500);
-    });
+import { authenticateUser } from './database.js';
+
+// Function to check if user is logged in
+function isLoggedIn() {
+    return localStorage.getItem('pollingUser') !== null;
 }
+
+// Function to get current user
+function getCurrentUser() {
+    const userData = localStorage.getItem('pollingUser');
+    return userData ? JSON.parse(userData) : null;
+}
+
+// Function to handle logout
+function handleLogout() {
+    localStorage.removeItem('pollingUser');
+    window.location.href = 'index.html';
+}
+
+export {
+    isLoggedIn,
+    getCurrentUser,
+    handleLogout
+};
 
 // Function to check if user is logged in
 function isLoggedIn() {
