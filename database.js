@@ -49,22 +49,11 @@ async function mockFetchFromSheet(sheetName) {
         setTimeout(() => {
             if (sheetName === 'users') {
                 resolve([
-                    { username: 'admin1', password: 'admin123', role: 'admin', kelas: '', kelompok: '', has_voted: false },
-                    { username: 'voter1', password: 'voter123', role: 'voter', kelas: 'XI-1', kelompok: '', has_voted: false },
-                    { username: 'idol1', password: 'idol123', role: 'idol', kelas: 'XI-1', kelompok: '1', has_voted: false }
-                ]);
-            } else if (sheetName === 'idols') {
-                resolve([
-                    { id: 1, kelas: 'XI-1', kelompok: '1', nama: 'Kelompok 1', deskripsi: 'Deskripsi kelompok 1', foto_url: 'https://via.placeholder.com/300?text=Kelompok+1', vote_count: 15 },
-                    { id: 2, kelas: 'XI-1', kelompok: '2', nama: 'Kelompok 2', deskripsi: 'Deskripsi kelompok 2', foto_url: 'https://via.placeholder.com/300?text=Kelompok+2', vote_count: 10 },
-                    { id: 3, kelas: 'XI-2', kelompok: '1', nama: 'Kelompok 1', deskripsi: 'Deskripsi kelompok 1 XI-2', foto_url: 'https://via.placeholder.com/300?text=Kelompok+1+XI2', vote_count: 8 },
-                    { id: 4, kelas: 'XI-2', kelompok: '2', nama: 'Kelompok 2', deskripsi: 'Deskripsi kelompok 2 XI-2', foto_url: 'https://via.placeholder.com/300?text=Kelompok+2+XI2', vote_count: 12 }
-                ]);
-            } else if (sheetName === 'votes') {
-                resolve([
-                    { voter_username: 'voter1', idol_id: 1, timestamp: '2023-11-01 10:00:00' }
+                    // Hanya admin yang ada
+                    { username: 'admin', password: 'admin123', role: 'admin', kelas: '', kelompok: '', has_voted: false }
                 ]);
             } else {
+                // Sheet lainnya kosong
                 resolve([]);
             }
         }, 500);
