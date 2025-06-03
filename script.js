@@ -22,6 +22,61 @@ function checkAuth() {
     }
 }
 
+async function loadIdols() {
+    const idolsContainer = document.getElementById('idolsContainer');
+    idolsContainer.innerHTML = '<p>Memuat data idol...</p>';
+    
+    try {
+        const idols = await getIdols();
+        const classes = [...new Set(idols.map(idol => idol.kelas))];
+        
+        // Isi dropdown filter kelas
+        const kelasSelect = document.getElementById('kelasSelect');
+        kelasSelect.innerHTML = '<option value="all">Semua Kelas</option>';
+        classes.forEach(kelas => {
+            const option = document.createElement('option');
+            option.value = kelas;
+            option.textContent = kelas;
+            kelasSelect.appendChild(option);
+        });
+        
+        displayIdols(idols);
+    } catch (error) {
+        console.error('Error loading idols:', error);
+        idolsContainer.innerHTML = '<p class="error">Gagal memuat data idol. Silakan coba lagi.</p>';
+    }
+}
+
+async function handleVote(idolId) {
+    if (!currentUser || currentUser.has_voted) return;
+    
+    try {
+        const result = await saveVote(currentUser.username, idolId);
+        
+        if (result.success) {
+            alert('Vote Anda berhasil dicatat!');
+            
+            // Update UI
+            currentUser.has_voted = true;
+            localStorage.setItem('pollingUser', JSON.stringify(currentUser));
+            
+            // Disable semua tombol vote
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.textContent = 'Sudah Vote';
+            });
+            
+            // Refresh data idol untuk update jumlah vote
+            await loadIdols();
+        } else {
+            alert('Gagal menyimpan vote: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Vote error:', error);
+        alert('Terjadi kesalahan saat memproses vote Anda');
+    }
+}
+
 function redirectBasedOnRole() {
     if (!currentUser) return;
     
