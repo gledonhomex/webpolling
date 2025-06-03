@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Voter - Polling Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard Voter</h1>
+            <button id="logoutBtn" class="btn logout">Logout</button>
+        </header>
+        <main>
+            <div id="kelasFilter">
+                <label for="kelasSelect">Filter Kelas:</label>
+                <select id="kelasSelect">
+                    <option value="all">Semua Kelas</option>
+                    <option value="XI-1">XI-1</option>
+                    <option value="XI-2">XI-2</option>
+                    <!-- Tambahkan kelas lainnya -->
+                </select>
+            </div>
+            
+            <div id="idolsContainer" class="idols-grid"></div>
+        </main>
+        <footer>
+            <p>&copy; 2023 Polling Website. Created by Aditya Putra B. (XI - 1)</p>
+        </footer>
+    </div>
+    <script src="auth.js"></script>
+    <script src="database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
