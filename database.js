@@ -2,7 +2,7 @@
 // For now, we'll use mock data and functions
 
 // Google Sheets API configuration
-const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // You need to create this
+const scriptUrl = 'https://script.google.com/macros/s/AKfycbxq48ppMoXOAL5fYYn3ybbqLtmy2j4WW3BPLvSaKcBTQcDdC02DqFDNwhtF9Jv2ENJ-Gw/exec'; // You need to create this
 
 // Function to fetch data from Google Sheets
 async function fetchFromSheet(sheetName) {
