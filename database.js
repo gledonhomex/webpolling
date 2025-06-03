@@ -1,25 +1,23 @@
-// This file would contain functions to interact with Google Sheets as a database
-// For now, we'll use mock data and functions
+// Konfigurasi Google Apps Script
+const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
 
-// Google Sheets API configuration
-const scriptUrl = 'https://script.google.com/macros/s/AKfycbxq48ppMoXOAL5fYYn3ybbqLtmy2j4WW3BPLvSaKcBTQcDdC02DqFDNwhtF9Jv2ENJ-Gw/exec'; // You need to create this
-
-// Function to fetch data from Google Sheets
-async function fetchFromSheet(sheetName) {
+// Fungsi untuk mengambil data dari sheet
+async function getSheetData(sheetName) {
     try {
         const response = await fetch(`${scriptUrl}?sheet=${sheetName}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return await response.json();
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
     } catch (error) {
-        console.error('Error fetching data:', error);
-        return null;
+        console.error(`Error fetching ${sheetName}:`, error);
+        return [];
     }
 }
 
-// Function to post data to Google Sheets
-async function postToSheet(sheetName, data) {
+// Fungsi untuk menyimpan data ke sheet
+async function saveToSheet(sheetName, data) {
     try {
         const response = await fetch(scriptUrl, {
             method: 'POST',
@@ -38,44 +36,84 @@ async function postToSheet(sheetName, data) {
         
         return await response.json();
     } catch (error) {
-        console.error('Error posting data:', error);
-        return null;
+        console.error(`Error saving to ${sheetName}:`, error);
+        return { success: false, error: error.message };
     }
 }
 
-// Mock functions for development
-async function mockFetchFromSheet(sheetName) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            if (sheetName === 'users') {
-                resolve([
-                    // Hanya admin yang ada
-                    { username: 'admin', password: 'admin123', role: 'admin', kelas: '', kelompok: '', has_voted: false }
-                ]);
-            } else {
-                // Sheet lainnya kosong
-                resolve([]);
-            }
-        }, 500);
-    });
+// Fungsi khusus untuk autentikasi
+async function authenticateUser(username, password) {
+    const users = await getSheetData('users');
+    const user = users.find(u => u.username === username && u.password === password);
+    return user ? { ...user } : null;
 }
 
-// Use mock functions for now
-async function getSheetData(sheetName) {
-    // In development, use mock data
-    if (window.location.href.includes('replit.com') || window.location.href.includes('localhost')) {
-        return await mockFetchFromSheet(sheetName);
-    }
-    // In production, use real Google Sheets API
-    return await fetchFromSheet(sheetName);
+// Fungsi untuk mendapatkan data idol
+async function getIdols() {
+    return await getSheetData('idols');
 }
 
-async function saveSheetData(sheetName, data) {
-    // In development, log to console
-    if (window.location.href.includes('replit.com') || window.location.href.includes('localhost')) {
-        console.log(`Saving to ${sheetName}:`, data);
-        return { success: true };
+// Fungsi untuk menyimpan vote
+async function saveVote(voterUsername, idolId) {
+    // Tambahkan record vote baru
+    const voteData = {
+        voter_username: voterUsername,
+        idol_id: Number(idolId),
+        timestamp: new Date().toISOString()
+    };
+    
+    const voteResult = await saveToSheet('votes', voteData);
+    
+    if (voteResult.success) {
+        // Update has_voted di users
+        const users = await getSheetData('users');
+        const userIndex = users.findIndex(u => u.username === voterUsername);
+        
+        if (userIndex !== -1) {
+            users[userIndex].has_voted = true;
+            // Di aplikasi nyata, Anda perlu mengupdate seluruh sheet
+            // Ini adalah implementasi sederhana
+            await saveToSheet('users', users[userIndex]);
+        }
+        
+        // Update vote_count di idol
+        const idols = await getSheetData('idols');
+        const idolIndex = idols.findIndex(i => i.id === Number(idolId));
+        
+        if (idolIndex !== -1) {
+            idols[idolIndex].vote_count = Number(idols[idolIndex].vote_count || 0) + 1;
+            await saveToSheet('idols', idols[idolIndex]);
+        }
     }
-    // In production, use real Google Sheets API
-    return await postToSheet(sheetName, data);
+    
+    return voteResult;
 }
+
+// Fungsi untuk update profil idol
+async function updateIdolProfile(idolId, updatedData) {
+    const idols = await getSheetData('idols');
+    const idolIndex = idols.findIndex(i => i.id === Number(idolId));
+    
+    if (idolIndex !== -1) {
+        const updatedIdol = { ...idols[idolIndex], ...updatedData };
+        return await saveToSheet('idols', updatedIdol);
+    }
+    
+    return { success: false, error: 'Idol not found' };
+}
+
+// Fungsi untuk mendapatkan data leaderboard
+async function getLeaderboard() {
+    const idols = await getSheetData('idols');
+    return idols.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+}
+
+export {
+    getSheetData,
+    saveToSheet,
+    authenticateUser,
+    getIdols,
+    saveVote,
+    updateIdolProfile,
+    getLeaderboard
+};
